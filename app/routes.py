@@ -26,18 +26,25 @@ def continuar_historia():
 # Función para generar la historia
 def generar_historia(opcion):
     prompt = f"La historia continúa con la elección: {opcion}. ¿Qué sucede después?"
-    respuesta = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
+    respuesta = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Modelo más reciente para interacción conversacional
+        messages=[
+            {"role": "system", "content": "Eres un generador de historias interactivas."},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=150
     )
-    return respuesta.choices[0].text.strip()
+    # Extraer la respuesta generada
+    return respuesta["choices"][0]["message"]["content"].strip()
+
 
 # Función para generar imágenes
+
 def generar_imagen(descripcion):
+    # Generar una imagen basada en la descripción
     respuesta = openai.Image.create(
         prompt=descripcion,
-        n=1,
-        size="512x512"
+        n=1,  # Número de imágenes a generar
+        size="512x512"  # Tamaño de la imagen: 256x256, 512x512 o 1024x1024
     )
-    return respuesta['data'][0]['url']
+    return respuesta['data'][0]['url']  # Retorna el URL de la imagen generada

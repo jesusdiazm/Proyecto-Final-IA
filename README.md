@@ -1,7 +1,7 @@
 # Proyecto-de-Final-IA
 
-## Nombre
+## Nombre: Jesus Altagracia Diaz Martinez
 
-## Matrícula
+## Matrícula: 18-misn*2*001
 
-## Proyecto
+## Proyecto: Proyecto Final IA (Examen Final)

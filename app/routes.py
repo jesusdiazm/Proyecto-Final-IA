@@ -1,50 +1,47 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import openai
-import os
-from dotenv import load_dotenv
 
-# Cargar las variables de entorno desde venv/.env
-load_dotenv(dotenv_path="venv/.env")
+app = Flask(__name__)
 
-# Configurar la clave API de OpenAI
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Configura tu clave de API
+openai.api_key = 'tu_clave_secreta'
 
-# Crear el blueprint
-main = Blueprint('main', __name__)
-
-@main.route("/")
-def index():
-    return render_template("index.html")
-
-@main.route("/continuar", methods=["POST"])
-def continuar_historia():
-    opcion = request.json.get("opcion")
-    historia = generar_historia(opcion)
-    imagen = generar_imagen(historia)
-    return jsonify({"historia": historia, "imagen_url": imagen})
-
-# Función para generar la historia
-def generar_historia(opcion):
-    prompt = f"La historia continúa con la elección: {opcion}. ¿Qué sucede después?"
-    respuesta = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Modelo más reciente para interacción conversacional
-        messages=[
-            {"role": "system", "content": "Eres un generador de historias interactivas."},
-            {"role": "user", "content": prompt}
-        ],
+@app.route('/generar_historia', methods=['POST'])
+def generar_historia():
+    # Obtener el prompt principal y las opciones del cliente
+    data = request.get_json()
+    prompt = data.get('prompt', '')
+    
+    # Generar la primera parte de la historia
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
         max_tokens=150
     )
-    # Extraer la respuesta generada
-    return respuesta["choices"][0]["message"]["content"].strip()
+    historia = response.choices[0].text.strip()
+    
+    # Presentar opciones para continuar la historia
+    opciones = [f"Continúa la historia con opción {i+1}" for i in range(2)]
+    
+    return jsonify({"historia": historia, "opciones": opciones})
 
-
-# Función para generar imágenes
-
-def generar_imagen(descripcion):
-    # Generar una imagen basada en la descripción
-    respuesta = openai.Image.create(
-        prompt=descripcion,
-        n=1,  # Número de imágenes a generar
-        size="512x512"  # Tamaño de la imagen: 256x256, 512x512 o 1024x1024
+@app.route('/generar_imagen', methods=['POST'])
+def generar_imagen():
+    # Obtener la opción seleccionada para continuar la historia
+    data = request.get_json()
+    opcion = data.get('opcion', '')
+    
+    # Generar la continuación de la historia y una imagen relacionada
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=opcion,
+        max_tokens=150
     )
-    return respuesta['data'][0]['url']  # Retorna el URL de la imagen generada
+    historia = response.choices[0].text.strip()
+    
+    # Aquí podrías generar una imagen usando las funcionalidades de OpenAI si quieres
+    # Por simplificar, retornaremos solo la historia
+    return jsonify({"historia": historia})
+
+if __name__ == '__main__':
+    app.run(debug=True)

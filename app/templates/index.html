@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Historias</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Generador de Historias Interactivas</h1>
+    <p id="historia">Haz una elección para continuar la historia.</p>
+    <div id="opciones">
+        <button onclick="hacerEleccion('opcion1')">Opción 1</button>
+        <button onclick="hacerEleccion('opcion2')">Opción 2</button>
+    </div>
+    <img id="imagen" src="" alt="Imagen generada">
+    <script>
+        function hacerEleccion(opcion) {
+            axios.post('/continuar', { opcion: opcion })
+                .then(response => {
+                    document.getElementById('historia').innerText = response.data.historia;
+                    document.getElementById('imagen').src = response.data.imagen_url;
+                });
+        }
+    </script>
+</body>
+</html>

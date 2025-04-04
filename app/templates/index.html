@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Generador de Historias</title>
+    <title>Generador de Historias Interactivas</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Generador de Historias Interactivas</h1>
-    <p id="historia">Haz una elección para continuar la historia.</p>
-    <div id="opciones">
-        <button onclick="hacerEleccion('opcion1')">Opción 1</button>
-        <button onclick="hacerEleccion('opcion2')">Opción 2</button>
+    <div class="container">
+        <h1>Generador de Historias</h1>
+        <input type="text" id="prompt" placeholder="Ejemplo: Cuéntame una historia de terror">
+        <button onclick="generarHistoria()">Generar Historia</button>
+
+        <div id="contenido">
+            <img id="imagen" src="" alt="Imagen generada por AI">
+            <p id="historia"></p>
+            <div id="opciones"></div>
+        </div>
     </div>
-    <img id="imagen" src="" alt="Imagen generada">
+
     <script>
-        function hacerEleccion(opcion) {
-            axios.post('/continuar', { opcion: opcion })
+        function generarHistoria() {
+            const prompt = document.getElementById('prompt').value;
+
+            axios.post('/generar_historia', { prompt: prompt })
                 .then(response => {
+                    // Mostrar imagen
+                    document.getElementById('imagen').src = response.data.imagen;
+
+                    // Mostrar historia
                     document.getElementById('historia').innerText = response.data.historia;
-                    document.getElementById('imagen').src = response.data.imagen_url;
+
+                    // Mostrar opciones
+                    const opcionesDiv = document.getElementById('opciones');
+                    opcionesDiv.innerHTML = '';
+                    response.data.opciones.forEach(opcion => {
+                        const button = document.createElement('button');
+                        button.innerText = opcion;
+                        button.onclick = () => alert(`Elegiste: ${opcion}`);
+                        opcionesDiv.appendChild(button);
+                    });
                 });
         }
     </script>

@@ -4,12 +4,13 @@ import openai
 main = Blueprint('main', __name__)
 
 # Cargar clave de API desde el entorno
-openai.api_key = 'TU_CLAVE_API_AQUI'
+openai.api_key = 'OPENAI_API_KEY'
 
 @main.route("/")
 def index():
     return render_template("index.html")
 
+@main.route("/generar_historia", methods=["POST"])
 @main.route("/generar_historia", methods=["POST"])
 def generar_historia():
     data = request.json
@@ -17,7 +18,7 @@ def generar_historia():
 
     # Generar la primera parte de la historia
     respuesta_historia = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo",  # Modelo actualizado
         messages=[
             {"role": "system", "content": "Eres un narrador de historias interactivas."},
             {"role": "user", "content": prompt}

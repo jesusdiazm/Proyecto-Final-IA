@@ -1,93 +1,140 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Historias Interactivas</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        /* Estilos básicos de emergencia */
-        body { font-family: Arial; margin: 20px; }
-        #contenido { margin-top: 20px; border: 1px solid #ccc; padding: 20px; }
-    </style>
 </head>
 <body>
-    <h1>Generador de Historias Interactivas</h1>
-    <div>
-        <input type="text" id="prompt" placeholder="Ej: Cuéntame una historia de terror">
-        <button onclick="generarHistoria()">Generar Historia</button>
-    </div>
-    
-    <!-- Comentado para evitar confusiones
-    <div id="contenido">
-        <p>La aplicación está funcionando. Prueba a generar una historia.</p>
-        <img id="imagen" style="display: none; max-width: 100%;">
-        <p id="historia"></p>
-        <div id="opciones"></div>
-    </div> 
-    -->
-    <div id="contenido">
-        <div class="imagen-container">
-            <img id="imagen" src="" alt="Imagen generada por IA" style="display: none;">
+    <div class="container">
+        <h2><center>Generador de Historias Interactivas</h2>
+        
+        <div class="input-group">
+            <input type="text" id="prompt" placeholder="Ej: Cuéntame una historia sobre un dragón en una ciudad futurista">
+            <button class="btn-generar" onclick="generarHistoria('inicio')">
+                Generar Historia
+            </button>
         </div>
-        <p id="historia"></p>
-        <div id="opciones"></div>
+        
+        <div id="contenido" style="display: none;">
+            <div id="imagen-container">
+                <img id="imagen" alt="Imagen generada por IA">
+            </div>
+            
+            <div id="historia-container">
+                <h2>Tu Historia:</h2>
+                <p id="historia"></p>
+            </div>
+            
+            <div id="opciones-container">
+                <h3>¿Qué quieres hacer ahora?</h3>
+                <div id="opciones"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        console.log("Script cargado correctamente"); // Verifica en consola del navegador
+        let historiaActual = "";
+        let imagenActual = "";
         
-        function generarHistoria() {
-            console.log("Botón clickeado"); // Verifica que el evento se dispare
-            const prompt = document.getElementById('prompt').value;
-            console.log("Prompt:", prompt);
-            
-            axios.post('/generar_historia', { prompt })
-                /*.then(response => {
-                    console.log("Respuesta recibida:", response.data);
-                    
-                    // Mostrar imagen
-                    const img = document.getElementById('imagen');
-                    img.src = response.data.imagen;
-                    img.style.display = 'block'; */
-
-            //--------------------------------------------------------------------
-                    .then(response => {
-                    const img = document.getElementById('imagen');
-                    img.src = response.data.imagen;
-                    img.style.display = 'block';  // Hace visible la imagen   
-                    
-                    // Scroll suave a la imagen
-                    img.onload = () => {
-                    img.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    };
-            //--------------------------------------------------------------------
-
-                    // Mostrar historia
-                    document.getElementById('historia').innerText = response.data.historia;
-                    
-                    // Mostrar opciones
-                    const opcionesDiv = document.getElementById('opciones');
-                    opcionesDiv.innerHTML = '';
-                    response.data.opciones.forEach(opcion => {
-                        const button = document.createElement('button');
-                        button.innerText = opcion;
-                        button.onclick = () => {
-                            document.getElementById('prompt').value = opcion;
-                            generarHistoria();
-                        };
-                        opcionesDiv.appendChild(button);
-                    });
-                })
-                .catch(error => {
-                    const errorMsg = error.response?.data?.message || "Error inesperado";
-                    document.getElementById('historia').innerHTML = 
-                        `<div class="error">⚠️ ${errorMsg}</div>`;
-                });
+        function mostrarElemento(id) {
+            document.getElementById(id).style.display = 'block';
         }
+        
+        function mostrarCargando() {
+            const btn = document.querySelector('.btn-generar');
+            btn.innerHTML = '<span class="spinner"></span> Generando...';
+            btn.disabled = true;
+        }
+        
+        function ocultarCargando() {
+            const btn = document.querySelector('.btn-generar');
+            btn.textContent = 'Generar Historia';
+            btn.disabled = false;
+        }
+        
+        function generarHistoria(accion) {
+            mostrarCargando();
+            const prompt = accion === "inicio" 
+                ? document.getElementById('prompt').value 
+                : historiaActual;
+            
+            if (!prompt && accion === "inicio") {
+                alert("Por favor escribe un tema para tu historia");
+                ocultarCargando();
+                return;
+            }
+            
+            axios.post('/generar_historia', {
+                prompt: accion === "inicio" ? prompt : "",
+                accion: accion,
+                historia_actual: historiaActual
+            })
+            .then(response => {
+                historiaActual = response.data.historia;
+                imagenActual = response.data.imagen;
+                
+                // Mostrar resultados
+                document.getElementById('historia').innerText = historiaActual;
+                const imgElement = document.getElementById('imagen');
+                imgElement.src = imagenActual;
+                imgElement.style.display = 'block';
+                
+                // Mostrar opciones
+                const opcionesDiv = document.getElementById('opciones');
+                opcionesDiv.innerHTML = '';
+                
+                response.data.opciones.forEach(opcion => {
+                    const btn = document.createElement('button');
+                    btn.className = 'opcion-btn';
+                    btn.innerText = opcion;
+                    
+                    btn.onclick = () => {
+                        const accionMap = {
+                            "Continuar la historia": "continuar",
+                            "Cambiar el escenario": "escenario",
+                            "Hacer un giro inesperado": "giro"
+                        };
+                        generarHistoria(accionMap[opcion]);
+                    };
+                    
+                    opcionesDiv.appendChild(btn);
+                });
+                
+                // Mostrar sección de contenido
+                mostrarElemento('contenido');
+                if(accion === "inicio") {
+                    document.getElementById('prompt').value = "";
+                    window.scrollTo({
+                        top: document.getElementById('contenido').offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Ocurrió un error al generar la historia. Por favor intenta nuevamente.");
+            })
+            .finally(() => {
+                ocultarCargando();
+            });
+        }
+        
+        // Cargar ejemplo al inicio (opcional)
+        window.onload = function() {
+            // Puedes cargar un ejemplo inicial si lo deseas
+            // document.getElementById('prompt').value = "Un mago que perdió sus poderes";
+        };
     </script>
-    <button onclick="mostrarHistorial()">Ver Historial</button>
-    <div id="historial" style="display: none;"></div>
-
-
 </body>
+
+
+    <footer>
+        <p><br><center>Generador de Historias Interactivas<br>
+        Desarrollado por &copy;Jesus Diaz</p>
+
+    </footer>
+
 </html>

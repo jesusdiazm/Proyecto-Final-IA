@@ -1,85 +1,174 @@
+/* Estilos generales */
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: rgb(204, 201, 201);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
 }
 
-.imagen-container {
-    text-align: center;  /* Centrado adicional */
-    margin: 20px 0;
-    padding: 10px;
-    background: #f8f9fa;
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+}
+
+/* Formulario de entrada */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#prompt {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
     border-radius: 8px;
+    font-size: 15px;
+    transition: border 0.3s;
 }
 
-/* img {
-    max-width: 100%;
-    border-radius: 10px;
-    margin: 20px 0;
-} */
-
-/* Estilo para la imagen generada */
-img {
-    max-width: 60%;  /* Reduce el tamaño al 60% del contenedor */
-    display: block;  /* Permite centrado con margin */
-    margin: 0 auto;  /* Centrado horizontal */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
-    height: auto;  /* Mantiene proporción */
-    max-height: 300px;  /* Altura máxima opcional */
+#prompt:focus {
+    border-color: #3498db;
+    outline: none;
 }
 
-/* Para móviles */
-@media (max-width: 600px) {
-    #imagen {
-        max-width: 90%;
-    }
-}
-
-button {
-    margin: 5px;
-    padding: 10px 20px;
-    background: #007BFF;
+.btn-generar {
+    background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 12px 25px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.3s;
 }
 
-button:hover {
-    background: #0056b3;
+.btn-generar:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
 }
 
+/* Contenido generado */
+#contenido {
+    margin-top: 30px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#historia {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    white-space: pre-line;
+}
+
+/* Imagen generada */
+#imagen-container {
+    text-align: center;
+    margin: 20px 0;
+    margin: 0 auto; /* Centrado adicional */
+}
+
+#imagen {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto; /* Centrado horizontal */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+    display: none; /* Inicialmente oculta */
+}
+
+/* Opciones de continuación */
 #opciones {
-    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 25px;
 }
 
-.error {
-    color: #d32f2f;
-    background: #ffebee;
-    padding: 1rem;
-    border-radius: 4px;
+.opcion-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 14px;
 }
 
+.opcion-btn:nth-child(1) {
+    background-color: #2ecc71; /* Verde - Continuar */
+    color: white;
+}
+
+.opcion-btn:nth-child(2) {
+    background-color: #e67e22; /* Naranja - Cambiar escenario */
+    color: white;
+}
+
+.opcion-btn:nth-child(3) {
+    background-color: #e74c3c; /* Rojo - Giro inesperado */
+    color: white;
+}
+
+.opcion-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Spinner de carga */
 .spinner {
     display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
     border-radius: 50%;
     border-top-color: white;
     animation: spin 1s ease-in-out infinite;
+    vertical-align: middle;
+    margin-right: 8px;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    #opciones {
+        flex-direction: column;
+    }
+    
+    .opcion-btn {
+        width: 100%;
+    }
+}

@@ -1,3 +1,26 @@
+from flask import Blueprint, render_template, request, jsonify
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
+
+main = Blueprint('main', __name__)
+
+# Configuración segura del cliente OpenAI
+try:
+    client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+    if not client.api_key:
+        raise ValueError("La clave API de OpenAI no está configurada correctamente")
+except Exception as e:
+    print(f"Error al configurar OpenAI: {str(e)}")
+    client = None
+
+@main.route("/")
+def index():
+    return render_template("index.html")
+
 @main.route("/generar_historia", methods=["POST"])
 def generar_historia():
     if not client:
@@ -12,7 +35,7 @@ def generar_historia():
         # Definimos instrucciones específicas para cada acción
         instrucciones = {
             "inicio": f"Eres un narrador creativo. Comienza una historia sobre: {prompt}",
-            "continuar": f"Continúa esta historia de manera coherente:\n{historia_actual}",
+            "continuar": f"Continúa esta historia de manera coherente sin perder el hilo:\n{historia_actual}",
             "escenario": f"Manteniendo los personajes, cambia completamente el escenario de esta historia:\n{historia_actual}",
             "giro": f"Añade un giro inesperado a esta historia:\n{historia_actual}"
         }
@@ -34,7 +57,7 @@ def generar_historia():
             estilo = "dibujo animado" if accion != "giro" else "arte dramático"
             respuesta_imagen = client.images.generate(
                 model="dall-e-2",
-                prompt=f"{estilo} para: {historia[:200]}",
+                prompt=f"{estilo} para: {historia[:200]}", 
                 n=1,
                 size="512x512"
             )
@@ -56,3 +79,8 @@ def generar_historia():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+        
+        
+@main.route("/historial", methods=["GET"])
+def obtener_historial():
+    return jsonify(historial=[])  # Base para implementar persistencia en backend

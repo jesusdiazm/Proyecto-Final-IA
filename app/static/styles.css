@@ -15,10 +15,37 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-img {
+.imagen-container {
+    text-align: center;  /* Centrado adicional */
+    margin: 20px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* img {
     max-width: 100%;
     border-radius: 10px;
     margin: 20px 0;
+} */
+
+/* Estilo para la imagen generada */
+img {
+    max-width: 60%;  /* Reduce el tamaño al 60% del contenedor */
+    display: block;  /* Permite centrado con margin */
+    margin: 0 auto;  /* Centrado horizontal */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    height: auto;  /* Mantiene proporción */
+    max-height: 300px;  /* Altura máxima opcional */
+}
+
+/* Para móviles */
+@media (max-width: 600px) {
+    #imagen {
+        max-width: 90%;
+    }
 }
 
 button {
@@ -38,3 +65,21 @@ button:hover {
 #opciones {
     margin-top: 20px;
 }
+
+.error {
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

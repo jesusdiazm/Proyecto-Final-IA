@@ -2,46 +2,92 @@
 <html>
 <head>
     <title>Generador de Historias Interactivas</title>
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Estilos básicos de emergencia */
+        body { font-family: Arial; margin: 20px; }
+        #contenido { margin-top: 20px; border: 1px solid #ccc; padding: 20px; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Generador de Historias</h1>
+    <h1>Generador de Historias Interactivas</h1>
+    <div>
         <input type="text" id="prompt" placeholder="Ej: Cuéntame una historia de terror">
-        <br>
         <button onclick="generarHistoria()">Generar Historia</button>
-
-        <div id="contenido">
-            <img id="imagen" src="" alt="Imagen generada por AI">
-            <p id="historia"></p>
-            <div id="opciones"></div>
+    </div>
+    
+    <!-- Comentado para evitar confusiones
+    <div id="contenido">
+        <p>La aplicación está funcionando. Prueba a generar una historia.</p>
+        <img id="imagen" style="display: none; max-width: 100%;">
+        <p id="historia"></p>
+        <div id="opciones"></div>
+    </div> 
+    -->
+    <div id="contenido">
+        <div class="imagen-container">
+            <img id="imagen" src="" alt="Imagen generada por IA" style="display: none;">
         </div>
+        <p id="historia"></p>
+        <div id="opciones"></div>
     </div>
 
     <script>
+        console.log("Script cargado correctamente"); // Verifica en consola del navegador
+        
         function generarHistoria() {
+            console.log("Botón clickeado"); // Verifica que el evento se dispare
             const prompt = document.getElementById('prompt').value;
-
-            axios.post('/generar_historia', { prompt: prompt })
-                .then(response => {
+            console.log("Prompt:", prompt);
+            
+            axios.post('/generar_historia', { prompt })
+                /*.then(response => {
+                    console.log("Respuesta recibida:", response.data);
+                    
                     // Mostrar imagen
-                    document.getElementById('imagen').src = response.data.imagen;
+                    const img = document.getElementById('imagen');
+                    img.src = response.data.imagen;
+                    img.style.display = 'block'; */
+
+            //--------------------------------------------------------------------
+                    .then(response => {
+                    const img = document.getElementById('imagen');
+                    img.src = response.data.imagen;
+                    img.style.display = 'block';  // Hace visible la imagen   
+                    
+                    // Scroll suave a la imagen
+                    img.onload = () => {
+                    img.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    };
+            //--------------------------------------------------------------------
 
                     // Mostrar historia
                     document.getElementById('historia').innerText = response.data.historia;
-
+                    
                     // Mostrar opciones
                     const opcionesDiv = document.getElementById('opciones');
                     opcionesDiv.innerHTML = '';
                     response.data.opciones.forEach(opcion => {
                         const button = document.createElement('button');
                         button.innerText = opcion;
-                        button.onclick = () => alert(`Elegiste: ${opcion}`);
+                        button.onclick = () => {
+                            document.getElementById('prompt').value = opcion;
+                            generarHistoria();
+                        };
                         opcionesDiv.appendChild(button);
                     });
+                })
+                .catch(error => {
+                    const errorMsg = error.response?.data?.message || "Error inesperado";
+                    document.getElementById('historia').innerHTML = 
+                        `<div class="error">⚠️ ${errorMsg}</div>`;
                 });
         }
     </script>
+    <button onclick="mostrarHistorial()">Ver Historial</button>
+    <div id="historial" style="display: none;"></div>
+
+
 </body>
 </html>

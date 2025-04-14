@@ -1,7 +1,7 @@
 /* Estilos generales */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
+    background-color: #000000;
     margin: 0;
     padding: 20px;
     color: #333;
@@ -11,17 +11,20 @@ body {
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: rgb(204, 201, 201);
+    background: rgb(178, 189, 187);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 30px;
+    font-size: 16px;
+    color: #444; /* Color de la fuente */
+    
 }
 
 h1 {
     color: #2c3e50;
     text-align: center;
     margin-bottom: 30px;
-    font-size: 2.2em;
+    font-size: 24px;
 }
 
 /* Formulario de entrada */
@@ -33,10 +36,10 @@ h1 {
 
 #prompt {
     flex: 1;
-    padding: 12px 15px;
+    padding: 10px 13px;
     border: 2px solid #ddd;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 14px;
     transition: border 0.3s;
 }
 
@@ -196,4 +199,161 @@ body.dark-mode .container {
     border-radius: 20px;
     cursor: pointer;
     z-index: 1000;
+}
+
+#music-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+#music-controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+#current-genre {
+    color: white;
+    font-size: 0.9em;
+    min-width: 80px;
+    display: inline-block;
+}
+
+/* Controles de audio centrados */
+#music-controls.centered-controls {
+    position: static; /* Elimina el posicionamiento fijo */
+    background: none;
+    margin: 20px auto 0;
+    padding: 15px;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    border-top: 1px solid #eee;
+}
+
+#music-controls.centered-controls #current-genre {
+    color: #333; /* Texto más oscuro para mejor contraste */
+    font-weight: bold;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 600px) {
+    #music-controls.centered-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    #music-controls.centered-controls input[type="range"] {
+        width: 80%;
+    }
+}
+
+/* Versión compacta */
+#music-controls.compact-controls {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+#music-controls.compact-controls #current-genre {
+    font-size: 0.8em;
+}
+
+
+
+
+
+
+/* Estilos para el panel TTS */
+#tts-controls.tts-panel {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.tts-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tts-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.tts-btn.play { background: #2ecc71; color: white; }
+.tts-btn.pause { background: #f39c12; color: white; }
+.tts-btn.stop { background: #e74c3c; color: white; }
+
+.tts-btn:disabled {
+    background: #bdc3c7 !important;
+    cursor: not-allowed;
+}
+
+.tts-select {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    min-width: 150px;
+}
+
+.tts-speed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.tts-speed input[type="range"] {
+    width: 100px;
+}
+
+#speed-value {
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Estilos para el logo */
+.logo {
+    display: block;
+    max-width: 500px;  /* Ajusta según el tamaño de tu logo */
+    height: auto;
+    margin: 0 auto 20px; /* Centrado con margen inferior */
+}
+
+/* Para versión móvil */
+@media (max-width: 1200px) {
+    .logo {
+        max-width: 600px;
+    }
 }

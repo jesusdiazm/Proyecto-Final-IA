@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Historias Interactivas</title>
+    <title>Generador de Historias Interactivas con Música</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h2><center>Generador de Historias Interactivas</h2>
+
+       <p> <img src="{{ url_for('static', filename='logo.png') }}"
+            alt="Logo" 
+            class="logo"
+            width="1200" 
+            height="auto">
+       </p><br>
+<!--        <h1>Generador Interactivo de Historias<br> 
+            con Musica</h1> -->
         
         <div class="input-group">
-            <input type="text" id="prompt" placeholder="Ej: Cuéntame una historia sobre un dragón en una ciudad futurista">
+            <input type="text" id="prompt" placeholder="Ej: Un dragón que aprende a programar en Python">
             <button class="btn-generar" onclick="generarHistoria('inicio')">
                 Generar Historia
             </button>
@@ -24,38 +32,93 @@
             </div>
             
             <div id="historia-container">
-                <h2>Tu Historia:</h2>
+                <h2><center>Tu Historia:</center></h2>
                 <p id="historia"></p>
             </div>
             
             <div id="opciones-container">
-                <!-- <h3>¿Qué quieres hacer ahora?</h3> -->
+                <h3><center>¿Qué quieres hacer ahora?</center></h3>
                 <div id="opciones"></div>
+                
+                <!-- Nuevos controles de audio integrados -->
+                <div id="music-controls" class="centered-controls">
+                    <button onclick="player.toggleMute()" id="mute-btn">🔊</button>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.4">
+                    <span id="current-genre">🎵 Sin música</span>
+                </div>
             </div>
         </div>
     </div>
 
+    
+
+
     <script>
+        // Sistema de reproducción musical mejorado
+        class MusicPlayer {
+            constructor() {
+                this.audio = new Audio();
+                this.audio.loop = true;
+                this.volume = 0.4;
+                this.isMuted = false;
+                this.currentGenre = null;
+            }
+            
+            async play(genero) {
+                if (this.currentGenre === genero) return;
+                
+                this.currentGenre = genero;
+                document.getElementById('current-genre').textContent = `🎵 ${this.capitalizeFirstLetter(genero)}`;
+                
+                try {
+                    this.audio.src = `/static/sounds/${genero}.mp3`;
+                    this.audio.volume = this.isMuted ? 0 : this.volume;
+                    await this.audio.play();
+                } catch (e) {
+                    console.log("Error de audio:", e);
+                }
+            }
+            
+            setVolume(vol) {
+                this.volume = vol;
+                if (!this.isMuted) {
+                    this.audio.volume = vol;
+                }
+            }
+            
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                this.audio.volume = this.isMuted ? 0 : this.volume;
+                document.getElementById('mute-btn').textContent = this.isMuted ? "🔇" : "🔊";
+            }
+            
+            capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+        }
+
+        const player = new MusicPlayer();
         let historiaActual = "";
         let imagenActual = "";
-        
-        function mostrarElemento(id) {
-            document.getElementById(id).style.display = 'block';
+
+        // Configurar controles de volumen
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            player.setVolume(parseFloat(e.target.value));
+        });
+
+        // Función para detectar género con IA
+        async function detectarGenero(historia) {
+            try {
+                const response = await axios.post('/detectar_genero', { historia });
+                return response.data.genero || "aventura";
+            } catch (error) {
+                console.error("Error detectando género:", error);
+                return "aventura"; // Género por defecto
+            }
         }
-        
-        function mostrarCargando() {
-            const btn = document.querySelector('.btn-generar');
-            btn.innerHTML = '<span class="spinner"></span> Generando...';
-            btn.disabled = true;
-        }
-        
-        function ocultarCargando() {
-            const btn = document.querySelector('.btn-generar');
-            btn.textContent = 'Generar Historia';
-            btn.disabled = false;
-        }
-        
-        function generarHistoria(accion) {
+
+        // Función principal mejorada
+        async function generarHistoria(accion) {
             mostrarCargando();
             const prompt = accion === "inicio" 
                 ? document.getElementById('prompt').value 
@@ -67,12 +130,13 @@
                 return;
             }
             
-            axios.post('/generar_historia', {
-                prompt: accion === "inicio" ? prompt : "",
-                accion: accion,
-                historia_actual: historiaActual
-            })
-            .then(response => {
+            try {
+                const response = await axios.post('/generar_historia', {
+                    prompt: accion === "inicio" ? prompt : "",
+                    accion: accion,
+                    historia_actual: historiaActual
+                });
+                
                 historiaActual = response.data.historia;
                 imagenActual = response.data.imagen;
                 
@@ -82,7 +146,7 @@
                 imgElement.src = imagenActual;
                 imgElement.style.display = 'block';
                 
-                // Mostrar opciones
+                // Configurar opciones
                 const opcionesDiv = document.getElementById('opciones');
                 opcionesDiv.innerHTML = '';
                 
@@ -103,7 +167,11 @@
                     opcionesDiv.appendChild(btn);
                 });
                 
-                // Mostrar sección de contenido
+                // Reproducir música adecuada
+                const genero = await detectarGenero(historiaActual);
+                player.play(genero);
+                
+                // Mostrar contenido
                 mostrarElemento('contenido');
                 if(accion === "inicio") {
                     document.getElementById('prompt').value = "";
@@ -112,29 +180,42 @@
                         behavior: 'smooth'
                     });
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("Error:", error);
-                alert("Ocurrió un error al generar la historia. Por favor intenta nuevamente.");
-            })
-            .finally(() => {
+                alert("Ocurrió un error. Por favor intenta nuevamente.");
+            } finally {
                 ocultarCargando();
-            });
+            }
+        }
+
+        // Funciones auxiliares
+        function mostrarElemento(id) {
+            document.getElementById(id).style.display = 'block';
         }
         
-        // Cargar ejemplo al inicio (opcional)
-        window.onload = function() {
-            // Puedes cargar un ejemplo inicial si lo deseas
-            // document.getElementById('prompt').value = "Un mago que perdió sus poderes";
-        };
+        function mostrarCargando() {
+            const btn = document.querySelector('.btn-generar');
+            btn.innerHTML = '<span class="spinner"></span> Generando...';
+            btn.disabled = true;
+        }
+        
+        function ocultarCargando() {
+            const btn = document.querySelector('.btn-generar');
+            btn.textContent = 'Generar Historia';
+            btn.disabled = false;
+        }
+
+        // Ejemplo de música al cargar (opcional)
+        window.addEventListener('load', () => {
+            player.setVolume(0.4); // Volumen inicial al 40%
+        });
     </script>
 </body>
-
-
-    <footer>
-        <p><br><center>Generador de Historias Interactivas<br>
-        Desarrollado por &copy;Jesus Diaz</p>
-
-    </footer>
+<br>
+<br>
+<footer><center><p>
+    Generador de Historias Interactivas<br>
+    Desarrollado por &copy;Jesus Diaz
+</p></center></footer>
 
 </html>

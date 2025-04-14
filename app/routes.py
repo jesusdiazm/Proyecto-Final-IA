@@ -35,7 +35,7 @@ def generar_historia():
         # Definimos instrucciones específicas para cada acción
         instrucciones = {
             "inicio": f"Eres un narrador creativo. Comienza una historia sobre: {prompt}",
-            "continuar": f"Continúa esta historia de manera coherente sin perder el hilo:\n{historia_actual}",
+            "continuar": f"Continúa esta historia de manera coherente sin perder el hilo:\n{historia_actual}, recuerda, debes continuar la historia donde te quedaste.",
             "escenario": f"Manteniendo los personajes, cambia completamente el escenario de esta historia:\n{historia_actual}",
             "giro": f"Añade un giro inesperado a esta historia:\n{historia_actual}"
         }

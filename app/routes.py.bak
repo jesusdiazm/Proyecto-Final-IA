@@ -84,26 +84,3 @@ def generar_historia():
 @main.route("/historial", methods=["GET"])
 def obtener_historial():
     return jsonify(historial=[])  # Base para implementar persistencia en backend
-
-
-@main.route("/detectar_genero", methods=["POST"])
-def detectar_genero():
-    data = request.json
-    historia = data.get("historia", "")
-    
-    try:
-        respuesta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": """Clasifica el género de esta historia (solo responde una palabra): 
-                suspenso, aventura, terror, amor, accion. Ejemplo: 'terror'"""},
-                {"role": "user", "content": historia[:1000]}
-            ],
-            max_tokens=10,
-            temperature=0.3
-        )
-        genero = respuesta.choices[0].message.content.lower()
-        return jsonify({"genero": genero})
-    
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500

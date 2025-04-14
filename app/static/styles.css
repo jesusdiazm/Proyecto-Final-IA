@@ -55,7 +55,7 @@ h1 {
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: bold;
     transition: all 0.3s;
 }
@@ -91,6 +91,7 @@ h1 {
     margin: 0 auto; /* Centrado adicional */
 }
 
+
 #imagen {
     max-width: 100%;
     height: auto;
@@ -100,6 +101,7 @@ h1 {
     border: 1px solid #eee;
     display: none; /* Inicialmente oculta */
 }
+
 
 /* Opciones de continuación */
 #opciones {
@@ -176,6 +178,7 @@ h1 {
     }
 }
 
+
 /* Añade al final de styles.css */
 body.dark-mode {
     background-color: #1a1a1a;
@@ -186,6 +189,7 @@ body.dark-mode .container {
     background: #2d2d2d;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
 
 /* Botón para toggle */
 #toggle-mode {
@@ -346,13 +350,13 @@ body.dark-mode .container {
 /* Estilos para el logo */
 .logo {
     display: block;
-    max-width: 500px;  /* Ajusta según el tamaño de tu logo */
+    max-width: 550px;  /* Ajusta según el tamaño de tu logo */
     height: auto;
-    margin: 0 auto 20px; /* Centrado con margen inferior */
+    margin: 0 auto 30px; /* Centrado con margen inferior */
 }
 
 /* Para versión móvil */
-@media (max-width: 1200px) {
+@media (max-width: 600px) {
     .logo {
         max-width: 600px;
     }

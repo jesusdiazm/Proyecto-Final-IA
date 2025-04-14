@@ -35,7 +35,7 @@ def generar_historia():
         # Definimos instrucciones específicas para cada acción
         instrucciones = {
             "inicio": f"Eres un narrador creativo. Comienza una historia sobre: {prompt}",
-            "continuar": f"Continúa esta historia de manera coherente sin perder el hilo:\n{historia_actual}, recuerda, debes continuar la historia donde te quedaste.",
+            "continuar": f"Continúa esta historia de manera coherente sin perder el hilo:\n{historia_actual}, recuerda, debes continuar la historia donde te quedaste. la primera parte generada debe terninar en un '.'",
             "escenario": f"Manteniendo los personajes, cambia completamente el escenario de esta historia:\n{historia_actual}",
             "giro": f"Añade un giro inesperado a esta historia:\n{historia_actual}"
         }
@@ -45,7 +45,7 @@ def generar_historia():
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": instrucciones[accion]},
-                {"role": "user", "content": "Genera aproximadamente 100 palabras"}
+                {"role": "user", "content": "Genera aproximadamente 200 palabras"}
             ],
             max_tokens=150,
             temperature=0.7 if accion in ["inicio", "continuar"] else 0.9

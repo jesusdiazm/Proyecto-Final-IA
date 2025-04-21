@@ -86,6 +86,7 @@ def obtener_historial():
     return jsonify(historial=[])  # Base para implementar persistencia en backend
 
 
+#Codigo corregid para poder reproducir accion.mp3
 @main.route("/detectar_genero", methods=["POST"])
 def detectar_genero():
     data = request.json
@@ -96,14 +97,15 @@ def detectar_genero():
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": """Clasifica el género de esta historia (solo responde una palabra): 
-                suspenso, aventura, terror, amor, accion. Ejemplo: 'terror'"""},
+                suspenso, aventura, terror, amor, accion, acción. Ejemplo: 'accion'"""},  # <-- Añadí "acción"
                 {"role": "user", "content": historia[:1000]}
             ],
             max_tokens=10,
             temperature=0.3
         )
         genero = respuesta.choices[0].message.content.lower()
-        return jsonify({"genero": genero})
+        # Normaliza a "accion" sin tilde si es necesario
+        return jsonify({"genero": "accion" if "acción" in genero else genero})
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

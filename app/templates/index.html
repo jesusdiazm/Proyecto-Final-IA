@@ -13,7 +13,7 @@
        <p> <img src="{{ url_for('static', filename='logo.png') }}"
             alt="Logo" 
             class="logo"
-            width="1200" 
+            width="800" 
             height="auto">
        </p><br>
 
@@ -107,6 +107,9 @@
             player.setVolume(parseFloat(e.target.value));
         });
 
+
+
+
         // Función para detectar género con IA
         async function detectarGenero(historia) {
             try {
@@ -116,7 +119,8 @@
                 console.error("Error detectando género:", error);
                 return "aventura"; // Género por defecto
             }
-        }
+        } 
+
 
         // Función principal mejorada
         async function generarHistoria(accion) {
@@ -142,7 +146,16 @@
                 imagenActual = response.data.imagen;
                 
                 // Mostrar resultados
-                document.getElementById('historia').innerText = historiaActual;
+                
+                document.getElementById('historia').innerText = historiaActual;    
+
+/*                // REEMPLÁZALA con:
+                document.getElementById('historia-container').innerHTML = `
+                <h2><center>Tu Historia: Una historia de ${(await detectarGenero(historiaActual)).toLowerCase()}</center></h2>
+                <p id="historia">${historiaActual}</p>
+                `;
+*/
+
                 const imgElement = document.getElementById('imagen');
                 imgElement.src = imagenActual;
                 imgElement.style.display = 'block';
